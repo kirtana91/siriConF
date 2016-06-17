@@ -1,10 +1,10 @@
-/**
- * 
- */
 'use strict';
 
 module.exports = function(grunt) {
+	// Time how long tasks take. Can help when optimizing build times
 	require('time-grunt')(grunt);
+
+	// Automatically load required Grunt tasks
 	require('jit-grunt')(grunt, {
 		useminPrepare : 'grunt-usemin'
 	});
@@ -35,14 +35,14 @@ module.exports = function(grunt) {
 
 			fonts : {
 				files : [ {
-					//for bootstrap fonts
+					// for bootstrap fonts
 					expand : true,
 					dot : true,
 					cwd : 'bower_components/bootstrap/dist',
 					src : [ 'fonts/*.*' ],
 					dest : 'dist'
 				}, {
-					//for font-awesome
+					// for font-awesome
 					expand : true,
 					dot : true,
 					cwd : 'bower_components/font-awesome',
@@ -113,11 +113,58 @@ module.exports = function(grunt) {
 				assetsDirs : [ 'dist', 'dist/styles' ]
 			}
 		},
+		watch : {
+			copy : {
+				files : [ 'app/**', '!app/**/*.css', '!app/**/*.js' ],
+				tasks : [ 'build' ]
+			},
+
+			scripts : {
+				files : [ 'app/scripts/app.js' ],
+				tasks : [ 'build' ]
+			},
+
+			styles : {
+				files : [ 'app/styles/mystyles.css' ],
+				tasks : [ 'build' ]
+			},
+
+			livereload : {
+				options : {
+					livereload : '<%= connect.options.livereload %>'
+				},
+
+				files : [ 'app/{,*/}*.html', '.tmp/styles/{,*/}*.css',
+						'app/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}' ]
+			}
+		},
+		connect : {
+			options : {
+				port : 9000,
+				// Change this to '0.0.0.0' to access the server from outside.
+				hostname : 'localhost',
+				livereload : 35729
+			},
+
+			dist : {
+				options : {
+					open : true,
+					base : {
+						path : 'dist',
+						options : {
+							index : 'menu.html',
+							maxAge : 300000
+						}
+					}
+				}
+			}
+		},
 	});
 
 	grunt.registerTask('build', [ 'clean', 'jshint', 'useminPrepare', 'concat',
 			'cssmin', 'uglify', 'copy', 'filerev', 'usemin' ]);
-	grunt.registerTask('build', [ 'clean', 'jshint', 'copy' ]);
+	/*grunt.registerTask('build', [ 'clean', 'jshint', 'copy' ]);*/
+	grunt.registerTask('serve',['build','connect:dist','watch']);
 	grunt.registerTask('default', [ 'build' ]);
 
 };
